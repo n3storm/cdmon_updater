@@ -55,7 +55,7 @@ def main():
         try:
             page = urllib2.urlopen(url[0])
         except urllib2.URLError, e:
-            print e.reason
+            # print e.reason
             logging.info('%s problem: %s' % (url[0], e.reason))
             
         try:
@@ -67,11 +67,15 @@ def main():
 
     get = responsed()
     if get is not None and IP is not None:
-        if get['newip'] == IP:
-            logging.info('Not updating. Everything OK.')
+        # print get
+        if 'error' not in get['resultat']:
+            if get['newip'] == IP:
+                logging.info('Not updating. Everything OK.')
+            else:
+                update = responsed(NEW_IP = IP)
+                logging.info('Updating %s' % IP)
         else:
-            update = responsed(NEW_IP = IP)
-            logging.info('Updating %s' % IP)
+            logging.info('User or password wrong')
 
 if __name__ == "__main__":
     main()
