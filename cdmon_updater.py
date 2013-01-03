@@ -17,7 +17,11 @@ CDMON_USER = 'user'
 CDMON_PASSWORD = md5('password').hexdigest()
 
 # What is my ip services
-SERVICE_URLS = [('http://www.myglobalip.com/',("span", { "class" : "ip" })),]
+SERVICE_URLS = [
+            # ('http://url', (html_element, {"attr" : "attr_value"})),
+            ('http://www.myglobalip.com/', ("span", { "class" : "ip" })),
+            ('http://ipecho.net/plain/', None,),
+        ]
 
 def response_to_dict(value):
     mydict = dict()
@@ -59,7 +63,10 @@ def main():
             
         try:
             soup = BeautifulSoup(page)
-            IP = soup.find(url[1]).text
+            if url[1] != False:
+                IP = soup.find(url[1]).text
+            else:
+                IP = soup.text
             break
         except:
             logging.info('Error in HTML at %s.' % url[0])
