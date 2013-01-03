@@ -45,7 +45,6 @@ def responsed(NEW_IP=None):
         return response_to_dict(response_dict)
     except:
         logging.info('Error making request %s' % URL)
-        return None
 
     
     
