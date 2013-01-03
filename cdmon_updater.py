@@ -5,16 +5,19 @@ import urllib2
 from hashlib import md5
 from BeautifulSoup import BeautifulSoup
 
+# CDMON Settings
+## Change this with your settings
+CDMON_USER = 'user'
+CDMON_PASSWORD = md5('password').hexdigest()
+
+## Do not change next settings
+CDMON_GET_URL = 'https://dinamico.cdmon.org/onlineService.php?enctype=MD5&n=%s&p=%s'
+CDMON_UPDATE_URL = CDMON_GET_URL + '&cip=%s'
+
 # Logging options
 LOG_FILENAME = '/var/log/cdmon_updater.log'
 LOG_FORMAT = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 logging.basicConfig(filename=LOG_FILENAME, level=logging.INFO, format=LOG_FORMAT)
-
-# CDMON Settings
-CDMON_GET_URL = 'https://dinamico.cdmon.org/onlineService.php?enctype=MD5&n=%s&p=%s'
-CDMON_UPDATE_URL = CDMON_GET_URL + '&cip=%s'
-CDMON_USER = 'user'
-CDMON_PASSWORD = md5('password').hexdigest()
 
 # What is my ip services
 SERVICE_URLS = [
