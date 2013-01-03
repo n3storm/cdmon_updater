@@ -1,29 +1,34 @@
 # -*- coding: utf-8 -*-
 
 import logging
+import os
 import urllib2
 from hashlib import md5
 from BeautifulSoup import BeautifulSoup
 
 # CDMON Settings
 ## Change this with your settings
-CDMON_USER = 'user'
-CDMON_PASSWORD = md5('password').hexdigest()
+CDMON_USER = 'youruser'
+CDMON_PASSWORD = md5('yourpassword').hexdigest()
 
 ## Do not change next settings
 CDMON_GET_URL = 'https://dinamico.cdmon.org/onlineService.php?enctype=MD5&n=%s&p=%s'
 CDMON_UPDATE_URL = CDMON_GET_URL + '&cip=%s'
 
 # Logging options
-LOG_FILENAME = '/var/log/cdmon_updater.log'
+def LOG_FILENAME(log_file):
+    if os.access(os.path.dirname(log_file), os.W_OK):
+        return log_file
+    return 'log/cdmon_updater.log'
+
 LOG_FORMAT = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-logging.basicConfig(filename=LOG_FILENAME, level=logging.INFO, format=LOG_FORMAT)
+logging.basicConfig(filename=LOG_FILENAME('/var/log/cdmon_updater.log'), level=logging.INFO, format=LOG_FORMAT)
 
 # What is my ip services
 SERVICE_URLS = [
             # ('http://url', (html_element, {"attr" : "attr_value"})),
             ('http://www.myglobalip.com/', ("span", { "class" : "ip" })),
-            ('http://ipecho.net/plain/', None,),
+            ('http://ipecho.net/plain', None,),
         ]
 
 def response_to_dict(value):
@@ -61,18 +66,18 @@ def main():
         try:
             page = urllib2.urlopen(url[0])
         except urllib2.URLError, e:
-            # print e.reason
             logging.info('%s problem: %s' % (url[0], e.reason))
-            
-        try:
-            soup = BeautifulSoup(page)
-            if url[1] != False:
+
+        if url[1]:
+            try:
+                soup = BeautifulSoup(page)
                 IP = soup.find(url[1]).text
-            else:
-                IP = soup.text
+                break
+            except:
+                logging.info('Error in HTML at %s.' % url[0])
+        else:
+            IP = page.read().lstrip().rstrip()
             break
-        except:
-            logging.info('Error in HTML at %s.' % url[0])
 
     get = responsed()
     if get is not None and IP is not None:
